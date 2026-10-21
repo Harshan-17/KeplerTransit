@@ -130,10 +130,25 @@ const screeningMap = new Map<string, {
 }>();
 let screeningTopList: KeplerRecord[] = [];
 
+// Helper to resolve dataset files across local dev and Vercel serverless environments
+function findDatasetFile(...relativeSegments: string[]): string {
+  const candidates = [
+    path.join(process.cwd(), ...relativeSegments),
+    path.join(__dirname, ...relativeSegments),
+    path.join(__dirname, '..', ...relativeSegments),
+  ];
+  for (const candidate of candidates) {
+    if (fs.existsSync(candidate)) {
+      return candidate;
+    }
+  }
+  return path.join(process.cwd(), ...relativeSegments);
+}
+
 // Load dataset files
 function loadDataset() {
   try {
-    const screeningPath = path.join(__dirname, 'results', 'tables', 'kepler_screening_results.csv');
+    const screeningPath = findDatasetFile('results', 'tables', 'kepler_screening_results.csv');
     if (fs.existsSync(screeningPath)) {
       const csvContent = fs.readFileSync(screeningPath, 'utf8');
       const parsed = Papa.parse<any>(csvContent, { header: true, skipEmptyLines: true });
@@ -155,7 +170,7 @@ function loadDataset() {
       console.log(`Loaded ${screeningMap.size} screening results from kepler_screening_results.csv.`);
     }
 
-    const dataPath = path.join(__dirname, 'data', 'raw', 'processed', 'kepler_cleaned.csv');
+    const dataPath = findDatasetFile('data', 'raw', 'processed', 'kepler_cleaned.csv');
     if (fs.existsSync(dataPath)) {
       const csvContent = fs.readFileSync(dataPath, 'utf8');
       const parsed = Papa.parse<RawKeplerRow>(csvContent, { header: true, skipEmptyLines: true });
@@ -999,4 +1014,10 @@ async function startServer() {
   });
 }
 
-startServer();
+// Only start standalone HTTP server if running directly and not in Vercel serverless environment
+if (!process.env.VERCEL) {
+  startServer();
+}
+
+export { app };
+export default app;
