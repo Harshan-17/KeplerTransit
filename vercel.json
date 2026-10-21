@@ -4,7 +4,7 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "functions": {
-    "api/index.ts": {
+    "api/**": {
       "includeFiles": "data/**,results/**",
       "maxDuration": 30
     }
@@ -12,7 +12,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/api"
+      "destination": "/api?__endpoint=$1"
     },
     {
       "source": "/api",
