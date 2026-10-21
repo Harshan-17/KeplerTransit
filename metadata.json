@@ -1,0 +1,7 @@
+{
+  "name": "Kepler Exoplanet Analysis & Screening Platform",
+  "description": "Interactive AI-assisted Kepler exoplanet analysis platform with machine learning classification, candidate screening priority ranking, transit light-curve event analysis, and statistical data explorer.",
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
